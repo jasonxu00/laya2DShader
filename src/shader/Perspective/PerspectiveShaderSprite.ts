@@ -54,8 +54,8 @@ class PerspectiveShaderSprite extends Laya.Box {
 
     //重写渲染函数
     public customRender(context: Laya.RenderContext, x: number, y: number): void {
-        this.tween();
-        this.updateVBData();
+        // this.tween();
+        // this.updateVBData();
         context.ctx.setIBVB(x, y, (this.iBuffer) as Laya.IndexBuffer2D, (this.vBuffer) as Laya.VertexBuffer2D, this.iNum, null, PerspectiveShader.shader, this.shaderValue, 0, 0);
     }
 
