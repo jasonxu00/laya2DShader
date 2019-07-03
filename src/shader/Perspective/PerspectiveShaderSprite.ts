@@ -17,7 +17,6 @@ class PerspectiveShaderSprite extends Laya.Box {
     private _texture: Laya.Texture;
     constructor() {
         super();
-        Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onClickSelf);
     }
     /*
     初始化此类
@@ -33,11 +32,6 @@ class PerspectiveShaderSprite extends Laya.Box {
         ibArray = [];
         //在顶点索引数组中放入组成三角形的顶点索引
         //三角形的顶点索引对应顶点数组vbArray里的点索引，索引从0开始
-        // ibArray.push(0, 1, 5);
-        // ibArray.push(1, 2, 3); 
-        // ibArray.push(1, 4, 5); 
-        // ibArray.push(1, 3, 4); 
-
         ibArray.push(0, 1, 2);
         ibArray.push(3, 0, 2);
 
@@ -51,17 +45,11 @@ class PerspectiveShaderSprite extends Laya.Box {
 
         var texWidth: number = this._texture.width;
         var texHeight: number = this._texture.height;
-        this.vertexPosList[0] = new Laya.Point(0, texHeight * 0.5);
-        this.vertexPosList[1] = new Laya.Point(texWidth, texHeight * 0.5);
-        this.vertexPosList[2] = new Laya.Point(texWidth, texHeight);
-        this.vertexPosList[3] = new Laya.Point(0, texHeight);
-
-        //mask
-        let mask = new Laya.Sprite();
-        mask.graphics.drawRect(0,0,200,200, 0xffffff);
-        this.addChild(mask);
-        mask.pos(200, texHeight - 200);
-        this.mask = mask;
+        this.vertexPosList[0] = new Laya.Point(-0.1, 0.1);
+        this.vertexPosList[1] = new Laya.Point(0.7, 0.5);
+        this.vertexPosList[2] = new Laya.Point(1, 0.9);
+        this.vertexPosList[3] = new Laya.Point(0, 1.05);
+        this.updateVBData();
     }
 
     //重写渲染函数
@@ -69,22 +57,6 @@ class PerspectiveShaderSprite extends Laya.Box {
         this.tween();
         this.updateVBData();
         context.ctx.setIBVB(x, y, (this.iBuffer) as Laya.IndexBuffer2D, (this.vBuffer) as Laya.VertexBuffer2D, this.iNum, null, PerspectiveShader.shader, this.shaderValue, 0, 0);
-    }
-
-    private onClickSelf(event: Laya.Event): void {
-        if (1 + 1 == 2) return;
-        if (event.stageX > this._texture.width + 40) return;
-        if (event.stageY > this._texture.height + 40) return;
-        let index = 0;
-        let centerX = this._texture.width * 0.5 + 20;
-        let centerY = this._texture.height * 0.5 + 20;
-        if (event.stageX > centerX && event.stageY <= centerY) index = 1;
-        if (event.stageX > centerX && event.stageY > centerY) index = 2;
-        if (event.stageX <= centerX && event.stageY > centerY) index = 3;
-
-        this.vertexPosList[index].x = event.stageX - 20;
-        this.vertexPosList[index].y = event.stageY - 20;
-        this.updateVBData();
     }
 
     private _tweenValue: number = 0.0;
@@ -102,15 +74,16 @@ class PerspectiveShaderSprite extends Laya.Box {
         // this._tweenValue = 0;
         var texWidth: number = this._texture.width;
         var texHeight: number = this._texture.height;
-        this.vertexPosList[0].y = (0.45 + this._tweenValue * 0.2) * texHeight;
-        this.vertexPosList[1].y = (0.65 - this._tweenValue * 0.2) * texHeight;
-        this.vertexPosList[2].y = (0.95 + this._tweenValue * 0.1) * texHeight;
-        this.vertexPosList[3].y = (1.05 - this._tweenValue * 0.1) * texHeight;
 
-        this.vertexPosList[0].x = (0.1 + this._tweenValue * 0.25) * texWidth;
-        this.vertexPosList[1].x = (1 - 0.1 - 0.25 + this._tweenValue * 0.25) * texWidth;
-        this.vertexPosList[2].x = (1.0 - 0.0 - 0.05 + this._tweenValue * 0.05) * texWidth;
-        this.vertexPosList[3].x = (0.0 + this._tweenValue * 0.05) * texWidth;
+        this.vertexPosList[0].x = -0.05 + this._tweenValue * 0.4;
+        this.vertexPosList[1].x = 1 + 0.05 - 0.4 + this._tweenValue * 0.4;
+        this.vertexPosList[2].x = 1.0 - 0.0 - 0.05 + this._tweenValue * 0.05;
+        this.vertexPosList[3].x = 0.0 + this._tweenValue * 0.05;
+
+        this.vertexPosList[0].y = 0.2 + this._tweenValue * 0.4;
+        this.vertexPosList[1].y = 0.2 + 0.4 - this._tweenValue * 0.4;
+        this.vertexPosList[2].y = 1; //0.95 + this._tweenValue * 0.1;
+        this.vertexPosList[3].y = 1; //1.05 - this._tweenValue * 0.1;
 
     }
 
@@ -122,23 +95,23 @@ class PerspectiveShaderSprite extends Laya.Box {
         var texHeight: number = this._texture.height;
 
         //四个顶点坐标
-        let p0x = this.vertexPosList[0].x;
-        let p0y = this.vertexPosList[0].y;
+        let p0x = this.vertexPosList[0].x * texWidth;
+        let p0y = this.vertexPosList[0].y * texHeight;
         let u0 = 0;
         let v0 = 0;
 
-        let p1x = this.vertexPosList[1].x;
-        let p1y = this.vertexPosList[1].y;
+        let p1x = this.vertexPosList[1].x * texWidth;
+        let p1y = this.vertexPosList[1].y * texHeight;
         let u1 = 1;
         let v1 = 0;
 
-        let p2x = this.vertexPosList[2].x;
-        let p2y = this.vertexPosList[2].y;
+        let p2x = this.vertexPosList[2].x * texWidth;
+        let p2y = this.vertexPosList[2].y * texHeight;
         let u2 = 1;
         let v2 = 1;
 
-        let p3x = this.vertexPosList[3].x;
-        let p3y = this.vertexPosList[3].y;
+        let p3x = this.vertexPosList[3].x * texWidth;
+        let p3y = this.vertexPosList[3].y * texHeight;
         let u3 = 0;
         let v3 = 1;
 

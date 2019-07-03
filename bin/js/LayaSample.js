@@ -11,20 +11,6 @@ var GameMain = /** @class */ (function () {
         // // //加载一张图片
         // let url = "1.png";
         // Laya.loader.load(url, Laya.Handler.create(this, this.loadComplete3, [url]));
-        // Laya3D.init(0, 0,true);
-        // Laya.stage.scaleMode = Laya.Stage.SCALE_FULL;
-        // Laya.stage.screenMode = Laya.Stage.SCREEN_NONE;
-        // Laya.Stat.show();
-        // var scene = Laya.Scene.load("LayaScene_scene1/scene1.ls");
-        // Laya.stage.addChild(scene);
-        // //创建摄像机(横纵比，近距裁剪，远距裁剪)
-        // var camera = new Laya.Camera(0, 0.3, 1000);
-        // //加载到场景
-        // scene.addChild(camera);
-        // //移动摄像机位置
-        // camera.transform.position = new Laya.Vector3(0, 0, 10);
-        // //旋转摄像机角度
-        // camera.transform.rotate(new Laya.Vector3(0, 0, 0), true, false);
     }
     GameMain.prototype.loadComplete = function (skinUrl) {
         var texture = Laya.Loader.getRes(skinUrl);

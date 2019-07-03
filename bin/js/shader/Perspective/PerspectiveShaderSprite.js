@@ -24,7 +24,6 @@ var PerspectiveShaderSprite = /** @class */ (function (_super) {
         _this.vertexPosList = [];
         _this._tweenValue = 0.0;
         _this._tweenStep = 0.01;
-        Laya.stage.on(Laya.Event.MOUSE_UP, _this, _this.onClickSelf);
         return _this;
     }
     /*
@@ -41,10 +40,6 @@ var PerspectiveShaderSprite = /** @class */ (function (_super) {
         ibArray = [];
         //在顶点索引数组中放入组成三角形的顶点索引
         //三角形的顶点索引对应顶点数组vbArray里的点索引，索引从0开始
-        // ibArray.push(0, 1, 5);
-        // ibArray.push(1, 2, 3); 
-        // ibArray.push(1, 4, 5); 
-        // ibArray.push(1, 3, 4); 
         ibArray.push(0, 1, 2);
         ibArray.push(3, 0, 2);
         this.iNum = ibArray.length;
@@ -55,42 +50,17 @@ var PerspectiveShaderSprite = /** @class */ (function (_super) {
         this._renderType |= Laya.RenderSprite.CUSTOM; //设置当前显示对象的渲染模式为自定义渲染模式
         var texWidth = this._texture.width;
         var texHeight = this._texture.height;
-        this.vertexPosList[0] = new Laya.Point(0, texHeight * 0.5);
-        this.vertexPosList[1] = new Laya.Point(texWidth, texHeight * 0.5);
-        this.vertexPosList[2] = new Laya.Point(texWidth, texHeight);
-        this.vertexPosList[3] = new Laya.Point(0, texHeight);
-        //mask
-        var mask = new Laya.Sprite();
-        mask.graphics.drawRect(0, 0, 200, 200, 0xffffff);
-        this.addChild(mask);
-        mask.pos(200, texHeight - 200);
-        this.mask = mask;
+        this.vertexPosList[0] = new Laya.Point(-0.1, 0.1);
+        this.vertexPosList[1] = new Laya.Point(0.7, 0.5);
+        this.vertexPosList[2] = new Laya.Point(1, 0.9);
+        this.vertexPosList[3] = new Laya.Point(0, 1.05);
+        this.updateVBData();
     };
     //重写渲染函数
     PerspectiveShaderSprite.prototype.customRender = function (context, x, y) {
         this.tween();
         this.updateVBData();
         context.ctx.setIBVB(x, y, (this.iBuffer), (this.vBuffer), this.iNum, null, PerspectiveShader.shader, this.shaderValue, 0, 0);
-    };
-    PerspectiveShaderSprite.prototype.onClickSelf = function (event) {
-        if (1 + 1 == 2)
-            return;
-        if (event.stageX > this._texture.width + 40)
-            return;
-        if (event.stageY > this._texture.height + 40)
-            return;
-        var index = 0;
-        var centerX = this._texture.width * 0.5 + 20;
-        var centerY = this._texture.height * 0.5 + 20;
-        if (event.stageX > centerX && event.stageY <= centerY)
-            index = 1;
-        if (event.stageX > centerX && event.stageY > centerY)
-            index = 2;
-        if (event.stageX <= centerX && event.stageY > centerY)
-            index = 3;
-        this.vertexPosList[index].x = event.stageX - 20;
-        this.vertexPosList[index].y = event.stageY - 20;
-        this.updateVBData();
     };
     PerspectiveShaderSprite.prototype.tween = function () {
         this._tweenValue += this._tweenStep;
@@ -105,14 +75,14 @@ var PerspectiveShaderSprite = /** @class */ (function (_super) {
         // this._tweenValue = 0;
         var texWidth = this._texture.width;
         var texHeight = this._texture.height;
-        this.vertexPosList[0].y = (0.45 + this._tweenValue * 0.2) * texHeight;
-        this.vertexPosList[1].y = (0.65 - this._tweenValue * 0.2) * texHeight;
-        this.vertexPosList[2].y = (0.95 + this._tweenValue * 0.1) * texHeight;
-        this.vertexPosList[3].y = (1.05 - this._tweenValue * 0.1) * texHeight;
-        this.vertexPosList[0].x = (0.1 + this._tweenValue * 0.25) * texWidth;
-        this.vertexPosList[1].x = (1 - 0.1 - 0.25 + this._tweenValue * 0.25) * texWidth;
-        this.vertexPosList[2].x = (1.0 - 0.0 - 0.05 + this._tweenValue * 0.05) * texWidth;
-        this.vertexPosList[3].x = (0.0 + this._tweenValue * 0.05) * texWidth;
+        this.vertexPosList[0].x = -0.05 + this._tweenValue * 0.4;
+        this.vertexPosList[1].x = 1 + 0.05 - 0.4 + this._tweenValue * 0.4;
+        this.vertexPosList[2].x = 1.0 - 0.0 - 0.05 + this._tweenValue * 0.05;
+        this.vertexPosList[3].x = 0.0 + this._tweenValue * 0.05;
+        this.vertexPosList[0].y = 0.2 + this._tweenValue * 0.4;
+        this.vertexPosList[1].y = 0.2 + 0.4 - this._tweenValue * 0.4;
+        this.vertexPosList[2].y = 1; //0.95 + this._tweenValue * 0.1;
+        this.vertexPosList[3].y = 1; //1.05 - this._tweenValue * 0.1;
     };
     PerspectiveShaderSprite.prototype.updateVBData = function () {
         if (this.vBuffer)
@@ -123,20 +93,20 @@ var PerspectiveShaderSprite = /** @class */ (function (_super) {
         var texWidth = this._texture.width;
         var texHeight = this._texture.height;
         //四个顶点坐标
-        var p0x = this.vertexPosList[0].x;
-        var p0y = this.vertexPosList[0].y;
+        var p0x = this.vertexPosList[0].x * texWidth;
+        var p0y = this.vertexPosList[0].y * texHeight;
         var u0 = 0;
         var v0 = 0;
-        var p1x = this.vertexPosList[1].x;
-        var p1y = this.vertexPosList[1].y;
+        var p1x = this.vertexPosList[1].x * texWidth;
+        var p1y = this.vertexPosList[1].y * texHeight;
         var u1 = 1;
         var v1 = 0;
-        var p2x = this.vertexPosList[2].x;
-        var p2y = this.vertexPosList[2].y;
+        var p2x = this.vertexPosList[2].x * texWidth;
+        var p2y = this.vertexPosList[2].y * texHeight;
         var u2 = 1;
         var v2 = 1;
-        var p3x = this.vertexPosList[3].x;
-        var p3y = this.vertexPosList[3].y;
+        var p3x = this.vertexPosList[3].x * texWidth;
+        var p3y = this.vertexPosList[3].y * texHeight;
         var u3 = 0;
         var v3 = 1;
         var ax = p2x - p0x;
